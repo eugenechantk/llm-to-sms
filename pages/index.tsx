@@ -26,7 +26,7 @@ export default function Home() {
   const [secrets, setSecrets] = React.useState<ISecret[]>([]);
   const [payloads, setPayload] = React.useState<IPayload[]>([]);
   const [errMsg, setErrMsg] = React.useState<IErrMsg[]>([]);
-  const [phoneNum, setPhoneNum] = React.useState<string>("(504)702-4561");
+  const [phoneNum, setPhoneNum] = React.useState<string>("");
 
   const handlePhoneNumberProvision = async () => {
     try {
@@ -76,12 +76,12 @@ export default function Home() {
           className="w-full bg-transparent border-2 border-gray-800 text-3xl font-medium tracking-tight px-6 py-4 rounded-2xl"
         ></input>
         <p className="text-lg text-gray-400">
-          Set up your headers, body and custom error messages to expose the API
+          Set up body and custom error messages to expose the API
           to an SMS service
         </p>
         {/* REQUEST HEADERS */}
         <div className="w-full flex flex-col gap-4">
-          <div className="w-full flex flex-row justify-between items-center">
+          {/* <div className="w-full flex flex-row justify-between items-center">
             <h3>Request Headers</h3>
             <button
               onClick={() => {
@@ -91,7 +91,7 @@ export default function Home() {
             >
               <PlusCircleIcon className="w-10 h-10 text-gray-500" />
             </button>
-          </div>
+          </div> */}
           <div className="w-full flex flex-col gap-3">
             {secrets.map((secret, index) => {
               return (
