@@ -38,7 +38,7 @@ export default async function handler(
             // const data = await MODEL(Body, '', '', '', history)
             await client.messages
                 .create({
-                    body: `v3 response: something`,
+                    body: `v3 response: something ${Body}`,
                     from: To,
                     to: From,
                 })
