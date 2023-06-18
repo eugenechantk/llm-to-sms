@@ -62,6 +62,7 @@ export default async function handler(
     // This is a `fetch()` API thing, not an OpenAI thing
     signal: controller.signal,
   }).then(async (response) => {
+    let cacheRes = ""
     const reader = response.body!.getReader();
     reader.read().then(function processText({ done, value }): Promise<void> | undefined  {
       if (done) {
@@ -74,7 +75,8 @@ export default async function handler(
       const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
       const aiResponse = JSON.parse(json);
       const aiResponseText = aiResponse.choices[0].delta?.content;
-      console.log(aiResponseText)
+      cacheRes += aiResponseText
+      console.log(cacheRes)
 
       return reader.read().then(processText);
     }).catch((e) => {
