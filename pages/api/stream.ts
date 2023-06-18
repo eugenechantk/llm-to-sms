@@ -2,11 +2,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
-import {
-  ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum,
-} from "openai";
+import { ChatCompletionRequestMessageRoleEnum } from "openai";
+import nextConnect from "next-connect";
+import type { NextRequest } from "next/server";
 
+const baseUrl = process.env.VERCEL_URL
+  ? "https://" + process.env.VERCEL_URL
+  : "http://localhost:3000";
 const sampleMessages = [
   {
     role: ChatCompletionRequestMessageRoleEnum.User,
@@ -51,10 +53,11 @@ const openai = new OpenAIApi(config);
 // IMPORTANT! Set the runtime to edge
 export const runtime = "edge";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextRequest, res: NextApiResponse) {
+  const json = await req.json();
+  console.log(json, typeof json);
+  const { to, from, history } = json;
+
   let cacheRes = "";
   let msgList: string[] = [];
 
@@ -63,6 +66,7 @@ export default async function handler(
     stream: true,
     messages: sampleMessages,
   });
+
 
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response, {
@@ -73,24 +77,70 @@ export default async function handler(
     onToken: async (token: string) => {
       cacheRes += token;
       if (cacheRes.length > 160) {
-        cacheRes = cacheRes.replace(/\r?\n/g, '')
-        cacheRes = cacheRes.replace(/\\/g, '')
+        cacheRes = cacheRes.replace(/\r?\n/g, "");
+        cacheRes = cacheRes.replace(/\\/g, "");
         const words = cacheRes.split(" ");
         const lastWord = words.pop() || "";
         const updatedCacheRes = words.join(" ");
-        console.log(updatedCacheRes)
-        setTimeout(() => console.log('mimicing Twilio send SMS', updatedCacheRes), 5000)
+        console.log(updatedCacheRes);
+        console.log(
+          `number to send to ${from} and chunk is ${updatedCacheRes}`
+        );
+
+        // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
+        const body = {
+          to: to,
+          from: from,
+          chunk: updatedCacheRes,
+        };
+        const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        };
+        try {
+          await fetch(`${baseUrl}/api/twilio/messages/send_chunk`, options);
+        } catch (e) {
+          console.log(e);
+        }
+
         cacheRes = lastWord;
       }
     },
     onCompletion: async (completion: string) => {
-      console.log(cacheRes)
-      setTimeout(() => console.log('mimicing Twilio send SMS', cacheRes), 5000)
-      console.log("Streaming done");
-      // console.log(msgList)
-
-      res.status(200).json({ response: completion });
-      Promise.resolve();
+      console.log(cacheRes);
+      // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
+      const body = {
+        to: to,
+        from: from,
+        chunk: cacheRes,
+      };
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      };
+      try {
+        await fetch(`${baseUrl}/api/twilio/messages/send_chunk`, options).then(
+          () => {
+            console.log("Streaming done");
+            // console.log(msgList)
+            // @ts-ignore
+            res.status(200).json({ response: completion });
+            res.end()
+            // Promise.resolve();
+          }
+        );
+      } catch (e) {
+        console.log(e);
+        res.status(400).json({ error: 'something wrong' });
+        res.end()
+        // Promise.resolve()
+      }
     },
   });
 
