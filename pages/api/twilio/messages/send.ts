@@ -1,6 +1,4 @@
 
-
-
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Twilio } from "twilio";
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -35,13 +33,30 @@ export default async function handler(
         }
         // Pass query to Model  
         try {
-            // const data = await MODEL(Body, '', '', '', history)
-            await client.messages
-                .create({
-                    body: `v3 response: something ${Body}`,
-                    from: To,
-                    to: From,
-                })
+            // TODO: calls the /api/stream route (wrap it as a function)
+            // Request body needs: history -> in the type of ChatCompleteRequestMessage, accountSid, authToken, To, From
+            const body = {
+                accountSid: process.env.TWILIO_ACCOUNT_SID,
+                authToken: process.env.TWILIO_AUTH_TOKEN,
+                to: To,
+                from: From,
+                history: 'something'
+            }
+            const options = {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+              };
+
+            await fetch('/api/stream', options).then((response) => console.log(response))
+            // await client.messages
+            //     .create({
+            //         body: `v3 response: something ${Body}`,
+            //         from: To,
+            //         to: From,
+            //     })
             const updatedHistory = history + ", " + Body
             await redis.set(From, updatedHistory)
         }

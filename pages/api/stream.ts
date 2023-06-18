@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import {
-  ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
 } from "openai";
 
@@ -55,6 +54,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  console.log(req.body)
+  // TODO: Create the Twilio client here
   let cacheRes = "";
   let msgList: string[] = [];
 
@@ -79,6 +80,9 @@ export default async function handler(
         const lastWord = words.pop() || "";
         const updatedCacheRes = words.join(" ");
         console.log(updatedCacheRes)
+
+        // TODO: call API send each chunk to user's number
+        // Request body: accountSid, authToken, To, From
         setTimeout(() => console.log('mimicing Twilio send SMS', updatedCacheRes), 5000)
         cacheRes = lastWord;
       }
