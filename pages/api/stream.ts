@@ -66,47 +66,22 @@ export default async function handler(
     let cacheRes: string = "";
     let sentMsg: string[] = [];
     const reader = response.body!.getReader();
-    reader
-      .read()
-      .then(function processText({ done, value }): Promise<void> | undefined {
-        if (done) {
-          console.log("stream complete");
-          console.log(cacheRes);
-          cacheRes = "";
-          res.status(200).send({ body: "steaming done" });
+    reader.read().then(function processText({ done, value }): Promise<void> | undefined  {
+      if (done) {
+        console.log("stream complete");
+        res.status(200).send({ message: "stream done" });
+        return
+      }
+      const decoded = new TextDecoder().decode(value);
+      // console.log(value);
+      const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
+      const aiResponse = JSON.parse(json);
+      const aiResponseText = aiResponse.choices[0].delta?.content;
+      console.log(aiResponseText)
 
-          return;
-        }
-
-        const decoded = new TextDecoder().decode(value);
-        if (counter < 10) {
-          const choices = JSON.parse(decoded.split("data:")[1]).choices[0];
-          console.log(JSON.stringify(choices))
-          counter++
-        }
-
-        const json = decoded.split("data:")[1]; // thi data needs some manipulation in order to be parsed, a separate concern
-        const aiResponse = JSON.parse(json);
-        console.log(aiResponse);
-        // const aiResponseText = aiResponse.choices[0].delta.content;
-        // console.log(aiResponseText, typeof aiResponseText);
-        if (aiResponse.choices[0].delta.content && aiResponse.choices[0].finish_reason !== "stop") {
-          // console.log(aiResponse.choices[0].delta.content);
-          cacheRes += aiResponse.choices[0].delta.content;
-        }
-        // const decoded = new TextDecoder().decode(value);
-        // const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
-        // const aiResponse = JSON.parse(json);
-        // const aiResponseText = aiResponse.choices[0].delta.content;
-        // // console.log(aiResponseText, typeof aiResponseText);
-        // if (aiResponseText && aiResponse.choices[0].finish_reason !== 'stop') {
-        //   cacheRes += aiResponseText;
-        // }
-
-        return reader.read().then(processText);
-      })
-      .catch((e) => {
-        res.status(400).send({ error: e });
-      });
+      return reader.read().then(processText);
+    }).catch((e) => {
+      res.status(400).send({error: e})
+    });
   });
 }
