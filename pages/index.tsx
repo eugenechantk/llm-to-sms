@@ -291,7 +291,9 @@ export default function Home() {
           </div>
         </div>
 
-        
+        <button onClick={() => handlePhoneNumberProvision() }>
+          <h3>Create SMS Number</h3>
+        </button>
       </div>
     </main>
   );
