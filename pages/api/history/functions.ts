@@ -7,16 +7,20 @@ const redis = new Redis({
     token: 'AZaGACQgNWFhNTk4YWUtZGI1NC00ZTRmLTg4NjktMDg1MDhhZGM4OGQyYzRiNWI1ZDhhNWY1NGViYTk0NDVkYTJhODJlNWJkOTY=',
 })
 
-function AccessRedis() {
-    this.get = async function (number: string) {
+class AccessRedis {
+    number: any
+    constructor(number: number) {
+        this.number = number;
+    }
+    async get(number: any) {
         console.log('Retrieve' + number);
         return await redis.get(number);
     };
-    this.delete = async function (number: string) {
+    async delete(number: any) {
         console.log("Deleting" + number);
         return await redis.del(number);
     };
-    this.update = async function ({ number, messages }) {
+    async update(number: any, messages: any) {
         console.log('Saving' + number)
         let next_history: string[] = [];
         let past_history: any = await redis.get(number);
@@ -33,5 +37,4 @@ function AccessRedis() {
         return await redis.set(number, next_history);
     }
 }
-
 export { AccessRedis }

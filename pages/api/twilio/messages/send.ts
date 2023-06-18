@@ -17,7 +17,7 @@ export default async function handler(
         let history = []
         // Retrieve user chat history from Redis
         try {
-            history = new AccessRedis().get(From)
+            history = new AccessRedis.get(From)
         } catch (error) {
             console.error('Unable to retrieve history');
         }
@@ -36,7 +36,7 @@ export default async function handler(
         }
         // Store new message
         try {
-            const store = new AccessRedis().update({ number: From, messages: history || JSON.stringify({}) })
+            const store = AccessRedis.update({ number: From, messages: history || JSON.stringify({}) })
         }
         catch (err) {
             console.log('Unable to store outpout message');
