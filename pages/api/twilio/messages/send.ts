@@ -19,7 +19,7 @@ export default async function handler(
         // Retrieve user chat history from Redis
         try {
 
-            history = redisStore.get(From)
+            history = await redisStore.get(From)
 
         } catch (error) {
             console.error('Unable to retrieve history');
@@ -39,7 +39,7 @@ export default async function handler(
         }
         // Store new message
         try {
-            redisStore.update(From, history || JSON.stringify({}))
+            await redisStore.update(From, history || JSON.stringify({}))
         }
         catch (err) {
             console.log('Unable to store outpout message');
