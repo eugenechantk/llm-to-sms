@@ -3,6 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
+import nextConnect from "next-connect";
+import type { NextRequest } from "next/server";
 
 const baseUrl = process.env.VERCEL_URL
   ? "https://" + process.env.VERCEL_URL
@@ -52,12 +54,13 @@ const openai = new OpenAIApi(config);
 export const runtime = "edge";
 
 export default async function handler(
-  req: NextApiRequest,
+  req: NextRequest,
   res: NextApiResponse
 ) {
-  // console.log(req.body)
-  const { to, from, history } = req.body;
-  console.log('what i got in /api/stream', to, from, history)
+  const json = await req.json();
+  console.log(json, typeof json);
+  const { To, From, Body } = json;
+
   let cacheRes = "";
   let msgList: string[] = [];
 
@@ -82,12 +85,14 @@ export default async function handler(
         const lastWord = words.pop() || "";
         const updatedCacheRes = words.join(" ");
         console.log(updatedCacheRes);
-        console.log(`number to send to ${from} and chunk is ${updatedCacheRes}`)
+        console.log(
+          `number to send to ${From} and chunk is ${updatedCacheRes}`
+        );
 
         // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
         const body = {
-          to: to,
-          from: from,
+          to: To,
+          from: From,
           chunk: updatedCacheRes,
         };
         const options = {
@@ -98,9 +103,10 @@ export default async function handler(
           body: JSON.stringify(body),
         };
         await fetch(`${baseUrl}/api/twilio/messages/send_chunk`, options).then((response) =>
-          console.log(response)
+          console.log('send chunk')
         );
-        cacheRes = lastWord
+
+        cacheRes = lastWord;
       }
     },
     onCompletion: async (completion: string) => {
