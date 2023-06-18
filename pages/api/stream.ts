@@ -55,7 +55,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-
+  let cacheRes = "";
+  let msgList: string[] = [];
 
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
@@ -70,13 +71,22 @@ export default async function handler(
       Promise.resolve();
     },
     onToken: async (token: string) => {
-      console.log(token);
+      cacheRes += token;
+      if (cacheRes.length > 160) {
+        const words = cacheRes.split(" ");
+        const lastWord = words.pop() || "";
+        const updatedCacheRes = words.join(" ");
+        msgList.push(cacheRes);
+        cacheRes = lastWord;
+      }
     },
     onCompletion: async (completion: string) => {
+      msgList.push(cacheRes)
       console.log("Streaming done");
+      console.log(msgList)
 
       res.status(200).json({ response: completion });
-      Promise.resolve()
+      Promise.resolve();
     },
   });
 
