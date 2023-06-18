@@ -41,6 +41,19 @@ export default function Home() {
     }
   }
 
+  const handlePhoneNumberProvision = async () => {
+    try {
+      let service = (await axios.post('http://localhost:3000/api/twilio/setup/start', {
+        SERVER: 'https://llm-to-sms-git-merge-twilio-with-streaming-eugenechantk.vercel.app',
+        uuid: 'a1-10'
+      })).data
+      console.log(service.number);
+     setPhoneNum(service.number)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   React.useEffect(() => {
     console.log(secrets);
   }, [secrets]);

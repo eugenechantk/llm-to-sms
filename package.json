@@ -21,6 +21,7 @@
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.6",
     "next": "13.4.6",
+    "next-connect": "^1.0.0",
     "openai": "^3.3.0",
     "openai-edge": "^1.0.0",
     "postcss": "8.4.24",
