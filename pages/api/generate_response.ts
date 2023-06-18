@@ -10,18 +10,35 @@ import axios from "axios";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const openAIUrl = 'https://api.openai.com/v1/chat/completions';
-  const prompt = 'Translate the following English text to French: "{}"';
-  const maxTokens = 60;
+
+  // if (req.method !== 'POST') {
+  //   res.status(405).send({ message: 'Only POST requests allowed' })
+  //   return
+  // }
 
   let gpt3Response;
   try {
     gpt3Response = await axios.post(openAIUrl, {
       model: "gpt-3.5-turbo",
-      messages: [{
-        role: "user",
-        content: "Say this is a test!"
-      }],
-      temperature: 0.7
+      messages: [
+        {
+          role: "user",
+          content: `Say this is a test!.`
+        },
+        {
+          role: "assistant",
+          content: `This is a test!.`
+        },
+        {
+          role: "user",
+          content: `Say this is a test!.`
+        },
+        {
+          role: "assistant",
+          content: `This is a test!.`
+        }
+      ],
+      temperature: 1.0
     }, {
       headers: {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
