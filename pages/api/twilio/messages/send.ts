@@ -57,7 +57,7 @@ export default async function handler(
       const body = {
           to: To,
           from: From,
-          history: 'something'
+          prompt: Body,
       }
       const options = {
           method: 'POST',

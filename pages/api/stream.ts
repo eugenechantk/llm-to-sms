@@ -56,7 +56,7 @@ export const runtime = "edge";
 export default async function handler(req: NextRequest, res: NextApiResponse) {
   const json = await req.json();
   console.log(json, typeof json);
-  const { to, from, history } = json;
+  const { to, from, prompt } = json;
 
   let cacheRes = "";
   let msgList: string[] = [];
@@ -64,7 +64,10 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     stream: true,
-    messages: sampleMessages,
+    messages: [{
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content: prompt,
+    }],
   });
 
 
