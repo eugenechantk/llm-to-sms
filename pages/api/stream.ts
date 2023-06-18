@@ -96,7 +96,7 @@ export default async function handler(
           },
           body: JSON.stringify(body),
         };
-        await fetch(`${baseUrl}/api/send_chunk`, options).then((response) =>
+        await fetch(`${baseUrl}/api/twilio/messages/send_chunk`, options).then((response) =>
           console.log(response)
         );
         cacheRes = lastWord
