@@ -20,7 +20,7 @@ export default async function handler(
                 inboundMethod: 'POST',
                 fallbackUrl,
                 fallbackMethod: 'POST',
-                usecase: 'notifications'
+                usecase: 'discussion'
             })
         res.status(200).json({ status: 'success', service: updateService })
     } catch (error) {

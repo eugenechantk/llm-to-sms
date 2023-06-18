@@ -12,12 +12,12 @@ export default async function handler(
 ) {
     try {
         const client = new Twilio(accountSid, authToken);
-        const { body, from, to } = req.body;
+        const { Body, From, To } = req.body;
         await client.messages
             .create({
-                body: 'Sending message back',
-                from: to,
-                to: from,
+                body: `Sending message back to you: ${Body}`,
+                from: To,
+                to: From,
             })
         res.status(200).json({ status: 'success' })
     } catch (error) {
