@@ -27,15 +27,18 @@ export default function Home() {
   const [payloads, setPayload] = React.useState<IPayload[]>([]);
   const [errMsg, setErrMsg] = React.useState<IErrMsg[]>([]);
   const [phoneNum, setPhoneNum] = React.useState<string>("");
+  const [loading, setLoading] = React.useState(false)
 
   const handlePhoneNumberProvision = async () => {
+    setLoading(true)
     try {
       let service = (await axios.post('http://localhost:3000/api/twilio/setup/start', {
-        SERVER: 'https://llm-to-sms-git-merge-twilio-with-streaming-eugenechantk.vercel.app',
-        uuid: 'a1-10'
+        SERVER: 'https://llm-to-sms.vercel.app',
+        uuid: 'a1-11'
       })).data
       console.log(service.number);
      setPhoneNum(service.number)
+     setLoading(false)
     } catch (error) {
       console.log(error);
     }
@@ -60,7 +63,8 @@ export default function Home() {
         />
         <div className="flex flex-col gap-6 items-center">
         <h3 className="text-gray-300 text-5xl">Offline GPT</h3>
-        <p className="text-3xl text-gray-500">Deploy your LLM and serve your chat model on SMS</p>
+        <p className="text-3xl text-white-500">A framework and gateway to reaching an extra 2.9 billion </p>
+        <p className="text-3xl text-gray-500">Deploy your LLM product and serve your chat model via SMS</p>
         </div>
       </div>
       {/* PHONE NUMBER */}
@@ -79,6 +83,21 @@ export default function Home() {
           placeholder="Your API route"
           className="w-full bg-transparent border-2 border-gray-800 text-3xl font-medium tracking-tight px-6 py-4 rounded-2xl"
         ></input>
+        <button style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "16px 20px",
+        gap: "4px",
+        background: "linear-gradient(0deg, #262626 63.89%, #333333 100%)",
+        border: "0.75px solid #595959",
+      }}
+      className={
+        "rounded-full text-sm font-semibold hover:!bg-gradient-to-b hover:!from-theme-15 hover:!from-[64%] hover:!to-theme-25 hover:!to-[100%] w-[320px]"
+      }onClick={() => handlePhoneNumberProvision() }>
+          {loading ? <h3 className="text-gray-200">Loading...</h3>: <h3>Create SMS Number</h3>}
+        </button>
         <p className="text-lg text-gray-400">
           Set up your headers, body and custom error messages to expose the API
           to an SMS service
@@ -272,9 +291,7 @@ export default function Home() {
           </div>
         </div>
 
-        <Button onClick={() => handlePhoneNumberProvision() }>
-          <h3>Create SMS Number</h3>
-        </Button>
+        
       </div>
     </main>
   );
