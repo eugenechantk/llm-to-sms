@@ -11,12 +11,12 @@ const redis = new Redis({
 class AccessRedis {
     number: any
     messages: any
-    constructor(number: number) {
-        this.number = number;
+    constructor() {
     }
     async get(number: any) {
         console.log('Retrieve' + number);
-        return await redis.get(number);
+        const history = await redis.get(number);
+        return history
     };
     async delete(number: any) {
         console.log("Deleting" + number);

@@ -12,12 +12,15 @@ export default async function handler(
     res: NextApiResponse<Object>
 ) {
     try {
+        const redisStore = new AccessRedis()
         const client = new Twilio(accountSid, authToken);
         const { Body, From, To } = req.body;
-        let history = []
+        let history: any;
         // Retrieve user chat history from Redis
         try {
-            history = new AccessRedis.get(From)
+
+            history = redisStore.get(From)
+
         } catch (error) {
             console.error('Unable to retrieve history');
         }
@@ -36,7 +39,7 @@ export default async function handler(
         }
         // Store new message
         try {
-            const store = new AccessRedis.update({ number: From, messages: history || JSON.stringify({}) })
+            redisStore.update(From, history || JSON.stringify({}))
         }
         catch (err) {
             console.log('Unable to store outpout message');
