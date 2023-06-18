@@ -25,7 +25,7 @@ export default function Home() {
   const [secrets, setSecrets] = React.useState<ISecret[]>([]);
   const [payloads, setPayload] = React.useState<IPayload[]>([]);
   const [errMsg, setErrMsg] = React.useState<IErrMsg[]>([]);
-  const [phoneNum, setPhoneNum] = React.useState<string>("");
+  const [phoneNum, setPhoneNum] = React.useState<string>("(504)702-4561");
 
   React.useEffect(() => {
     console.log(secrets);
@@ -49,7 +49,7 @@ export default function Home() {
       {phoneNum && (
         <div className="flex flex-col gap-2 items-center justify-center w-1/2 border border-gray-700 py-12 rounded-3xl mb-12">
           <h4 className="text-gray-300">
-            Here's the SMS number to chat with your model
+            Here&apos;s the SMS number to chat with your model
           </h4>
           <h1>(504) 761-3416</h1>
         </div>
