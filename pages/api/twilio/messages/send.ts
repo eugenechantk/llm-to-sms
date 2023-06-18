@@ -23,7 +23,7 @@ const baseUrl = process.env.VERCEL_URL
 // }
 
 export default async function handler(
-  req: Request,
+  req: NextApiRequest,
   res: NextApiResponse<Object>
 ) {
   if (req.method !== "POST") {
