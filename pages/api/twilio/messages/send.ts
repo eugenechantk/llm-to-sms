@@ -42,6 +42,7 @@ export default async function handler(
                     from: To,
                     to: From,
                 })
+            await redis.set(From, Body)
         }
         catch (err) {
             console.error("Unable to send message");
