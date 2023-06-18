@@ -21,7 +21,6 @@ export default async function handler(
   const body = req.body
   
   let data = await redis.get(body.number);
-  console.log(data)
 
   res.status(200).json({ data })
 }
