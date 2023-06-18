@@ -8,20 +8,20 @@ const redis = new Redis({
 })
 
 function AccessRedis() {
-    this.get = async function (number) {
+    this.get = async function (number: string) {
         console.log('Retrieve' + number);
         return await redis.get(number);
     };
-    this.delete = async function (number) {
+    this.delete = async function (number: string) {
         console.log("Deleting" + number);
         return await redis.del(number);
     };
-    this.update = async function (body) {
-        console.log('Saving' + body.number);
+    this.update = async function ({ number, messages }) {
+        console.log('Saving' + number)
         let next_history: string[] = [];
-        let past_history: any = await redis.get(body?.number);
+        let past_history: any = await redis.get(number);
 
-        var messages = JSON.parse(body.messages);
+        var messages = JSON.parse(messages);
 
         if (past_history !== null) {
             next_history = past_history.concat(messages);

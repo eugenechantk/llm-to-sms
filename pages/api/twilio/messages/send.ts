@@ -6,7 +6,7 @@ import { Twilio } from "twilio";
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 import { AccessRedis } from '@/pages/api/history/functions'
-import MODEL from '@/pages/api/1.ts'
+import MODEL from '@/pages/api/1'
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Object>
@@ -28,7 +28,7 @@ export default async function handler(
             })
 
         // Store new message
-        const store = new AccessRedis().update({ number: From, messages: history || [] })
+        const store = new AccessRedis().update({ number: From, messages: history || JSON.stringify({}) })
         res.status(200).json({ status: 'success' })
     } catch (error) {
         console.log(error);
