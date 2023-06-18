@@ -4,7 +4,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Twilio } from "twilio";
 import axios from 'axios'
-const BASE_URL = 'http://localhost:3000/api/twilio'
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 export default async function handler(
@@ -14,6 +13,8 @@ export default async function handler(
     try {
         const uuid = req?.body?.uuid
         const SERVER_URL = req.body.SERVER
+        const BASE_URL =
+            process.env.NODE_ENV === "production" ? SERVER_URL : 'http://localhost:3000/api/twilio'
         // Look for a valid number
         let number = (await axios.get(`${BASE_URL}/number/get`)).data.number;
         let resp = `${number} is available for client ${uuid}`
