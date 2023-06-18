@@ -9,15 +9,19 @@ import axios from "axios";
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const openAIUrl = 'https://api.openai.com/v1/engines/davinci-codex/completions';
+  const openAIUrl = 'https://api.openai.com/v1/chat/completions';
   const prompt = 'Translate the following English text to French: "{}"';
   const maxTokens = 60;
 
   let gpt3Response;
   try {
     gpt3Response = await axios.post(openAIUrl, {
-      prompt: prompt,
-      max_tokens: maxTokens,
+      model: "gpt-3.5-turbo",
+      messages: [{
+        role: "user",
+        content: "Say this is a test!"
+      }],
+      temperature: 0.7
     }, {
       headers: {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -30,18 +34,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  res.status(200).json({ OpenAIResponse: gpt3Response.data.choices[0].text.trim() });
-}
-
-//create a dictionary with phone number, string "GPT Says:", "User says"
-
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<any>
-) {
-  // Call the open ai api route
-
-
-  // Send back the response of the open ai
-  res.status(200).json({ OpenAIResponse: 'John Doe' })
+  res.status(200).json({ OpenAIResponse: gpt3Response.data.choices[0].message.content});
 }
