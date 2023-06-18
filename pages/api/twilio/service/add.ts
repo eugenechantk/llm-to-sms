@@ -16,7 +16,7 @@ export default async function handler(
         await client.messaging.v1.services(serviceName)
             .phoneNumbers
             .create({
-                phoneNumberSid
+                phoneNumberSid: phoneNumberSid
             })
         res.status(200).json({ status: 'success' })
     } catch (error) {

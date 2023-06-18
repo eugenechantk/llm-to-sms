@@ -21,7 +21,9 @@ export default async function handler(
         console.log(`Start provisioning the number [ ${number} ] for client ${uuid}`);
         try {
             // Provision/claim the number
-            let provision = (await axios.get(`${BASE_URL}/number/provision`))
+            let provision = (await axios.post(`${BASE_URL}/number/provision`, {
+                phoneNumber: number
+            }))
             if (provision.data.status == 'in-use' && provision.status === 200) {
                 console.log(`${number} is provisioned for client ${uuid}`)
             } else {
@@ -38,9 +40,12 @@ export default async function handler(
                 console.log(`Service ${uuid} failed`);
                 res.status(400).json({ status: 'Failed to create service' })
             }
+
+            const SERVICE_SID = createService.data.service.sid
+            console.log(`Service sid : ${createService.data.service.sid}`);
             // Add the number to the service
             let addNumber = (await axios.post(`${BASE_URL}/service/add`, {
-                serviceName: uuid,
+                serviceName: SERVICE_SID,
                 phoneNumberSid: provision.data.sid
             }))
             if (addNumber.status === 200) {
@@ -52,22 +57,22 @@ export default async function handler(
             }
             // Update service webhook
             let updateService = (await axios.post(`${BASE_URL}/service/update`, {
-                serviceName: uuid,
+                serviceName: SERVICE_SID,
                 inboundRequestUrl: `${SERVER_URL}/api/twilio/messages/send?uuid=${uuid}`,
                 inboundMethod: 'POST',
                 fallbackUrl: `${SERVER_URL}/api/twilio/messages/send?uuid=${uuid}`,
                 fallbackMethod: 'POST',
-                useInboundWebhookOnNumber: true,
+                friendlyName: uuid,
             }))
             if (updateService.status === 200) {
-                console.log(`Service ${uuid} updated updated successfully`);
+                console.log(`Service ${SERVICE_SID} updated updated successfully`);
             }
             else {
-                console.log(`Service ${uuid} failed to update`);
+                console.log(`Service ${SERVICE_SID} failed to update`);
                 res.status(400).json({ status: 'Failed to update service' })
             }
 
-            res.status(200).json({ status: 'success' })
+            res.status(200).json({ status: 'success', service: updateService.data })
 
         } catch (error) {
             console.log(error);

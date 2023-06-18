@@ -13,9 +13,11 @@ export default async function handler(
     try {
         const client = new Twilio(accountSid, authToken);
         const serviceName = req.body.serviceName
-        await client.messaging.v1.services
-            .create({ friendlyName: serviceName })
-        res.status(200).json({ status: 'success' })
+        let service = await client.messaging.v1.services
+            .create({
+                friendlyName: serviceName
+            })
+        res.status(200).json({ status: 'success', service })
     } catch (error) {
         console.log(error);
         res.status(500).json({ status: 'error' })
