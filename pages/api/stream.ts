@@ -5,7 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const url = 'https://api.openai.com/v1/chat/completions';
+  const url = "https://api.openai.com/v1/chat/completions";
   const apiKey = process.env.OPENAI_KEY; // Replace with your actual API key
   const headers = {
     "Content-Type": "application/json",
@@ -16,7 +16,7 @@ export default async function handler(
     messages: [
       {
         role: "user",
-        content: `come up with 5 different conversational questions to ask`
+        content: `come up with 5 different conversational questions to ask`,
       },
       {
         role: "assistant",
@@ -24,11 +24,11 @@ export default async function handler(
         If you could have a conversation with any historical figure, who would it be and why?
         What is your favorite way to unwind and relax after a long day?
         If you could visit any place in the world right now, where would you go and what would you do there?
-        What is one goal or aspiration you have for yourself in the next year, and what steps are you taking to achieve it?`
+        What is one goal or aspiration you have for yourself in the next year, and what steps are you taking to achieve it?`,
       },
       {
         role: "user",
-        content: `If you could have a conversation with any historical figure, who would it be and why?  Be as detailed as possible, and help me come up with something unique`
+        content: `If you could have a conversation with any historical figure, who would it be and why?  Be as detailed as possible, and help me come up with something unique`,
       },
       {
         role: "assistant",
@@ -40,16 +40,17 @@ export default async function handler(
         
         In addition to his artistic and scientific endeavors, I would be intrigued to learn about da Vinci's philosophies and worldview. His observations on the interconnectedness of nature, his pursuit of knowledge as a means of understanding the universe, and his fascination with the human mind and spirit offer endless avenues for thought-provoking discussions.
         
-        Ultimately, conversing with Leonardo da Vinci would provide an extraordinary opportunity to gain insights into the mind of a true Renaissance genius. By exploring his art, science, and philosophy, I would hope to unravel the complexities of his creative process, uncover hidden depths within his works, and gain a deeper understanding of the world through his visionary perspective.`
+        Ultimately, conversing with Leonardo da Vinci would provide an extraordinary opportunity to gain insights into the mind of a true Renaissance genius. By exploring his art, science, and philosophy, I would hope to unravel the complexities of his creative process, uncover hidden depths within his works, and gain a deeper understanding of the world through his visionary perspective.`,
       },
       {
-        role:'user',
-        content:`who is another figure other than leonardo da vinci`
-      }
+        role: "user",
+        content: `who is another figure other than leonardo da vinci`,
+      },
     ],
-    temperature: 1.0,
+    temperature: 0,
     stream: true,
   };
+  let counter = -1
   const controller = new AbortController();
   const response = await fetch(url, {
     method: "POST",
@@ -62,21 +63,50 @@ export default async function handler(
     // This is a `fetch()` API thing, not an OpenAI thing
     signal: controller.signal,
   }).then(async (response) => {
+    let cacheRes: string = "";
+    let sentMsg: string[] = [];
     const reader = response.body!.getReader();
-    reader.read().then(function processText({ done, value }): Promise<void> {
-      if (done) {
-        console.log("stream complete");
-        res.status(200).send({ message: "stream done" });
-      }
-      const decoded = new TextDecoder().decode(value);
-      // console.log(value);
-      const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
-      const aiResponse = JSON.parse(json);
-      const aiResponseText = aiResponse.choices[0].delta?.content;
-      console.log(aiResponseText)
+    reader
+      .read()
+      .then(function processText({ done, value }): Promise<void> | undefined {
+        if (done) {
+          console.log("stream complete");
+          console.log(cacheRes);
+          cacheRes = "";
+          res.status(200).send({ body: "steaming done" });
 
-      return reader.read().then(processText);
-    });
+          return;
+        }
+
+        const decoded = new TextDecoder().decode(value);
+        if (counter < 10) {
+          const choices = JSON.parse(decoded.split("data:")[1]).choices[0];
+          console.log(JSON.stringify(choices))
+          counter++
+        }
+
+        const json = decoded.split("data:")[1]; // thi data needs some manipulation in order to be parsed, a separate concern
+        const aiResponse = JSON.parse(json);
+        console.log(aiResponse);
+        // const aiResponseText = aiResponse.choices[0].delta.content;
+        // console.log(aiResponseText, typeof aiResponseText);
+        if (aiResponse.choices[0].delta.content && aiResponse.choices[0].finish_reason !== "stop") {
+          // console.log(aiResponse.choices[0].delta.content);
+          cacheRes += aiResponse.choices[0].delta.content;
+        }
+        // const decoded = new TextDecoder().decode(value);
+        // const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
+        // const aiResponse = JSON.parse(json);
+        // const aiResponseText = aiResponse.choices[0].delta.content;
+        // // console.log(aiResponseText, typeof aiResponseText);
+        // if (aiResponseText && aiResponse.choices[0].finish_reason !== 'stop') {
+        //   cacheRes += aiResponseText;
+        // }
+
+        return reader.read().then(processText);
+      })
+      .catch((e) => {
+        res.status(400).send({ error: e });
+      });
   });
-  res.status(200).send({ message: "stream done" });
 }
