@@ -9,8 +9,8 @@ export default async function handler(
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = new Twilio(accountSid, authToken);
 
-  const { chunk, to, from } = req.body;
-  console.log(chunk, to, from)
+  const {to, from , chunk} = req.body 
+  console.log('what i got from /api/twilio/messages/send_chunk', to, from , chunk)
 
   await client.messages
     .create({

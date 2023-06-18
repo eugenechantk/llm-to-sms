@@ -57,7 +57,7 @@ export default async function handler(
 ) {
   // console.log(req.body)
   const { to, from, history } = req.body;
-  console.log(req.body)
+  console.log('what i got in /api/stream', to, from, history)
   let cacheRes = "";
   let msgList: string[] = [];
 
