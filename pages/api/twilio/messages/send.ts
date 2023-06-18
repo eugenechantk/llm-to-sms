@@ -7,6 +7,14 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 import { AccessRedis } from '@/pages/api/history/functions'
 import MODEL from '@/pages/api/1'
+import { Redis } from '@upstash/redis'
+
+const db_url = 'https://massive-ostrich-38534.upstash.io';
+const redis = new Redis({
+    url: db_url,
+    token: 'AZaGACQgNWFhNTk4YWUtZGI1NC00ZTRmLTg4NjktMDg1MDhhZGM4OGQyYzRiNWI1ZDhhNWY1NGViYTk0NDVkYTJhODJlNWJkOTY=',
+})
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Object>
@@ -19,17 +27,18 @@ export default async function handler(
         // Retrieve user chat history from Redis
         try {
 
-            history = await redisStore.get(From)
+            history = await redis.get(From)
+            console.log(history);
 
         } catch (error) {
             console.error('Unable to retrieve history');
         }
         // Pass query to Model  
         try {
-            const data = await MODEL(Body, '', '', '', history)
+            // const data = await MODEL(Body, '', '', '', history)
             await client.messages
                 .create({
-                    body: `v3 response:  ${data.data.response}`,
+                    body: `v3 response: something`,
                     from: To,
                     to: From,
                 })
@@ -39,7 +48,19 @@ export default async function handler(
         }
         // Store new message
         try {
-            await redisStore.update(From, history || JSON.stringify({}))
+            // console.log('Saving' + number)
+            // let next_history: string[] = [];
+            // let past_history: any = await redis.get(number);
+
+            // var messages = JSON.parse(messages);
+
+            // if (past_history !== null) {
+            //     next_history = past_history.concat(messages);
+            // }
+            // else {
+            //     next_history = messages;
+            // }
+            await redis.set(From, 'something')
         }
         catch (err) {
             console.log('Unable to store outpout message');
