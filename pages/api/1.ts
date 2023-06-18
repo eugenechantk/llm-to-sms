@@ -18,7 +18,7 @@ export default async function MODEL({ query, model, history, apiKey, url }) {
         Authorization: `Bearer ${apiKey}`,
     };
     const QUERY = query;
-    const MODED_QUERY = `My question is ${QUERY}. Please answer this by breaking up the response into an array of objects consisting of 150 characters Append the the array index and a period to the start of each text and send me back an array only`
+    const MODED_QUERY = `My question is ${QUERY}. Please answer this by breaking up the response into an array of objects consisting of 150 characters. Send it as array of objects`
     const body = {
         model,
         messages: [
@@ -37,8 +37,7 @@ export default async function MODEL({ query, model, history, apiKey, url }) {
         },
     })).data;
 
-    console.log(response, 'response');
     if (response.choices[0].message.content) {
-        return JSON.parse(response.choices[0].message.content)
+        return response.choices[0].message.content
     }
 }
