@@ -2,9 +2,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
-import {
-  ChatCompletionRequestMessageRoleEnum,
-} from "openai";
+import { ChatCompletionRequestMessageRoleEnum } from "openai";
+import { Twilio } from "twilio";
 
 const sampleMessages = [
   {
@@ -54,8 +53,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log(req.body)
+  // console.log(req.body)
+  const { accountSid, authToken, to, from, history } = req.body;
   // TODO: Create the Twilio client here
+  const client = new Twilio(accountSid, authToken);
   let cacheRes = "";
   let msgList: string[] = [];
 
@@ -74,25 +75,33 @@ export default async function handler(
     onToken: async (token: string) => {
       cacheRes += token;
       if (cacheRes.length > 160) {
-        cacheRes = cacheRes.replace(/\r?\n/g, '')
-        cacheRes = cacheRes.replace(/\\/g, '')
+        cacheRes = cacheRes.replace(/\r?\n/g, "");
+        cacheRes = cacheRes.replace(/\\/g, "");
         const words = cacheRes.split(" ");
         const lastWord = words.pop() || "";
         const updatedCacheRes = words.join(" ");
-        console.log(updatedCacheRes)
+        console.log(updatedCacheRes);
 
         // TODO: call API send each chunk to user's number
         // Request body: accountSid, authToken, To, From
-        setTimeout(() => console.log('mimicing Twilio send SMS', updatedCacheRes), 5000)
+        await client.messages.create({
+          body: `${updatedCacheRes}`,
+          from: to,
+          to: from,
+        });
+        setTimeout(
+          () => console.log("mimicing Twilio send SMS", updatedCacheRes),
+          5000
+        );
         cacheRes = lastWord;
       }
     },
     onCompletion: async (completion: string) => {
-      console.log(cacheRes)
-      setTimeout(() => console.log('mimicing Twilio send SMS', cacheRes), 5000)
+      console.log(cacheRes);
+      setTimeout(() => console.log("mimicing Twilio send SMS", cacheRes), 5000);
       console.log("Streaming done");
       // console.log(msgList)
-
+      // @ts-ignore
       res.status(200).json({ response: completion });
       Promise.resolve();
     },
