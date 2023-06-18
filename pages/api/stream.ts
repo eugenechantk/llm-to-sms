@@ -79,12 +79,13 @@ export default async function handler(
         const lastWord = words.pop() || "";
         const updatedCacheRes = words.join(" ");
         console.log(updatedCacheRes)
-        msgList.push(updatedCacheRes);
+        setTimeout(() => console.log('mimicing Twilio send SMS', updatedCacheRes), 5000)
         cacheRes = lastWord;
       }
     },
     onCompletion: async (completion: string) => {
-      msgList.push(cacheRes)
+      console.log(cacheRes)
+      setTimeout(() => console.log('mimicing Twilio send SMS', cacheRes), 5000)
       console.log("Streaming done");
       // console.log(msgList)
 
