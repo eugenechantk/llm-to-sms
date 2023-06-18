@@ -22,8 +22,9 @@ export default async function handler(
       to: from,
     })
     .then(() => {
-      res.status(200).send({ message: `sent chunk to ${from}: ${chunk}` });
+      console.log({ message: `sent chunk to ${from}: ${chunk}` });
+      Promise.resolve
+      
     });
-  res.status(200).send({message: `sent ${chunk}`})
   res.end()
 }

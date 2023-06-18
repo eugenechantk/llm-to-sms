@@ -130,11 +130,15 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
             // console.log(msgList)
             // @ts-ignore
             res.status(200).json({ response: completion });
-            Promise.resolve();
+            res.end()
+            // Promise.resolve();
           }
         );
       } catch (e) {
         console.log(e);
+        res.status(400).json({ error: 'something wrong' });
+        res.end()
+        // Promise.resolve()
       }
     },
   });
