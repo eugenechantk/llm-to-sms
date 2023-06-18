@@ -99,11 +99,7 @@ export default async function handler(
         await fetch(`${baseUrl}/api/send_chunk`, options).then((response) =>
           console.log(response)
         );
-<<<<<<< Updated upstream
         cacheRes = lastWord
-=======
-        cacheRes = 
->>>>>>> Stashed changes
       }
     },
     onCompletion: async (completion: string) => {
