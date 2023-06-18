@@ -73,17 +73,20 @@ export default async function handler(
     onToken: async (token: string) => {
       cacheRes += token;
       if (cacheRes.length > 160) {
+        cacheRes = cacheRes.replace(/\r?\n/g, '')
+        cacheRes = cacheRes.replace(/\\/g, '')
         const words = cacheRes.split(" ");
         const lastWord = words.pop() || "";
         const updatedCacheRes = words.join(" ");
-        msgList.push(cacheRes);
+        console.log(updatedCacheRes)
+        msgList.push(updatedCacheRes);
         cacheRes = lastWord;
       }
     },
     onCompletion: async (completion: string) => {
       msgList.push(cacheRes)
       console.log("Streaming done");
-      console.log(msgList)
+      // console.log(msgList)
 
       res.status(200).json({ response: completion });
       Promise.resolve();
