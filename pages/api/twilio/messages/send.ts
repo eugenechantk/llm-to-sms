@@ -28,7 +28,7 @@ export default async function handler(
         try {
 
             history = await redis.get(From)
-            console.log(history);
+            console.log('what redis got: ', history);
 
         } catch (error) {
             console.error('Unable to retrieve history');
@@ -42,7 +42,8 @@ export default async function handler(
                     from: To,
                     to: From,
                 })
-            await redis.set(From, Body)
+            const updatedHistory = history + ", " + Body
+            await redis.set(From, updatedHistory)
         }
         catch (err) {
             console.error("Unable to send message");
