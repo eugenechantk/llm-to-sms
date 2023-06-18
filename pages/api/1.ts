@@ -1,7 +1,18 @@
 
 import axios from 'axios'
-export default async function MODEL(query: string, url: string = "https://api.openai.com/v1/chat/completions", model = "gpt-3.5-turbo",) {
-    const apiKey = process.env.OPENAI_API_KEY;
+export default async function MODEL({ query, model, history, apiKey, url }) {
+    if (!model) {
+        model = "gpt-3.5-turbo"
+    }
+    if (!history) {
+        history = []
+    }
+    if (!url) {
+        url = "https://api.openai.com/v1/chat/completions"
+    }
+    if (!apiKey) {
+        apiKey = process.env.OPENAI_API_KEY;
+    }
     const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
@@ -27,7 +38,6 @@ export default async function MODEL(query: string, url: string = "https://api.op
     })).data;
 
     console.log(response, 'response');
-
     if (response.choices[0].message.content) {
         return JSON.parse(response.choices[0].message.content)
     }
