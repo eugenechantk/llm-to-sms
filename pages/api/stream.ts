@@ -50,6 +50,7 @@ export default async function handler(
     temperature: 0,
     stream: true,
   };
+  let counter = 0
   const controller = new AbortController();
   const response = await fetch(url, {
     method: "POST",
@@ -70,20 +71,35 @@ export default async function handler(
       .then(function processText({ done, value }): Promise<void> | undefined {
         if (done) {
           console.log("stream complete");
-          // console.log(cacheRes)
+          console.log(cacheRes);
           cacheRes = "";
           res.status(200).send({ body: "steaming done" });
 
           return;
         }
+
         const decoded = new TextDecoder().decode(value);
+        if (counter < 10) {
+          const choices = JSON.parse(decoded.split("data: ")[1]).choices[0];
+          console.log(JSON.stringify(choices))
+          counter ++
+        }
+        
         const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
         const aiResponse = JSON.parse(json);
-        const aiResponseText = aiResponse.choices[0].delta.content;
+        // const aiResponseText = aiResponse.choices[0].delta.content;
         // console.log(aiResponseText, typeof aiResponseText);
-        if (aiResponseText && aiResponse.choices[0].finish_reason !== 'stop') {
-          cacheRes += aiResponseText;
+        if (aiResponse.choices[0].delta.content && aiResponse.choices[0].finish_reason !== "stop") {
+          cacheRes += aiResponse.choices[0].delta.content;
         }
+        // const decoded = new TextDecoder().decode(value);
+        // const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
+        // const aiResponse = JSON.parse(json);
+        // const aiResponseText = aiResponse.choices[0].delta.content;
+        // // console.log(aiResponseText, typeof aiResponseText);
+        // if (aiResponseText && aiResponse.choices[0].finish_reason !== 'stop') {
+        //   cacheRes += aiResponseText;
+        // }
 
         return reader.read().then(processText);
       })
