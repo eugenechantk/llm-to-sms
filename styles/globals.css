@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Satoshi";
+  src: url("../public/fonts/satoshi-bold.otf");
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -24,4 +29,81 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+@layer base {
+  html,
+  #__next, {
+    @apply h-full w-full p-0 m-0 bg-theme-5 text-theme-90
+  }
+
+  body {
+    @apply bg-gradient-to-b from-[rgba(10,10,10,1)] to-[rgba(0,0,0,1)]
+  }
+
+  h1 {
+    @apply font-satoshi text-[56px] leading-[67px] -tracking-[0.02em]
+  }
+
+  h3 {
+    @apply font-satoshi text-[28px] leading-[34px] -tracking-[0.02em]
+  }
+
+  h4 {
+    @apply font-sans font-semibold text-[24px] leading-[34px] -tracking-[0.02em]
+  }
+
+  h5 {
+    @apply font-sans font-bold text-[20px] leading-[28px]
+  }
+
+  h6 {
+    @apply font-sans font-semibold text-[14px] leading-[20px]
+  }
+  
+  .p-large {
+    @apply font-sans font-normal text-[20px] leading-[28px]
+  }
+
+  p {
+    @apply font-sans font-normal text-[16px] leading-[24px]
+  }
+
+  small {
+    @apply font-sans font-normal text-[14px] leading-[20px]
+  }
+
+  @media only screen and (max-width: 639px) {
+    h1 {
+      @apply font-satoshi text-[40px] leading-[48px] -tracking-[0.02em]
+    }
+  
+    h3 {
+      @apply font-satoshi text-[20px] leading-[24px] -tracking-[0.02em]
+    }
+  
+    h4 {
+      @apply font-sans font-semibold text-[20px] leading-[28px] -tracking-[0.02em]
+    }
+  
+    h5 {
+      @apply font-sans font-bold text-[16px] leading-[22px]
+    }
+  
+    h6 {
+      @apply font-sans font-semibold text-[14px] leading-[20px]
+    }
+    
+    .p-large {
+      @apply font-sans font-normal text-[20px] leading-[28px]
+    }
+  
+    p {
+      @apply font-sans font-normal text-[16px] leading-[24px]
+    }
+  
+    small {
+      @apply font-sans font-normal text-[14px] leading-[20px]
+    }
+  }
 }
