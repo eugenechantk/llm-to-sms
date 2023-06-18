@@ -71,19 +71,20 @@ export default async function handler(
         if (done) {
           console.log("stream complete");
           // console.log(cacheRes)
-          cacheRes = ""
-          res.status(200).send({body: 'steaming done'})
+          cacheRes = "";
+          res.status(200).send({ body: "steaming done" });
 
           return;
         }
         const decoded = new TextDecoder().decode(value);
         const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
         const aiResponse = JSON.parse(json);
-        console.log(aiResponse.choices[0].delta.content)
         const aiResponseText = aiResponse.choices[0].delta.content;
         // console.log(aiResponseText, typeof aiResponseText);
-        cacheRes += aiResponseText;
-        console.log(cacheRes)
+        if (aiResponseText && aiResponse.choices[0].finish_reason !== 'stop') {
+          cacheRes += aiResponseText;
+        }
+
         return reader.read().then(processText);
       })
       .catch((e) => {
