@@ -67,6 +67,7 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
     messages: sampleMessages,
   });
 
+
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response, {
     onStart: async () => {
