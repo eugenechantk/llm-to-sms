@@ -25,7 +25,7 @@ export default async function handler(
             const data = await MODEL({ query: Body, history })
             await client.messages
                 .create({
-                    body: `Sending message back to you: ${Body}`,
+                    body: `v3 response:  ${data.data.response}`,
                     from: To,
                     to: From,
                 })
