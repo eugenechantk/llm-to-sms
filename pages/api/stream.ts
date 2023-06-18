@@ -63,10 +63,11 @@ export default async function handler(
     signal: controller.signal,
   }).then(async (response) => {
     const reader = response.body!.getReader();
-    reader.read().then(function processText({ done, value }): Promise<void> {
+    reader.read().then(function processText({ done, value }): Promise<void> | undefined  {
       if (done) {
         console.log("stream complete");
         res.status(200).send({ message: "stream done" });
+        return
       }
       const decoded = new TextDecoder().decode(value);
       // console.log(value);
@@ -76,7 +77,8 @@ export default async function handler(
       console.log(aiResponseText)
 
       return reader.read().then(processText);
+    }).catch((e) => {
+      res.status(400).send({error: e})
     });
   });
-  res.status(200).send({ message: "stream done" });
 }
