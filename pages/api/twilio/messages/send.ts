@@ -1,10 +1,7 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Twilio } from "twilio";
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
 import { AccessRedis } from '@/pages/api/history/functions'
-import MODEL from '@/pages/api/1'
 import { Redis } from '@upstash/redis'
 
 const db_url = 'https://massive-ostrich-38534.upstash.io';
@@ -17,6 +14,8 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Object>
 ) {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
     try {
         const redisStore = new AccessRedis()
         const client = new Twilio(accountSid, authToken);
