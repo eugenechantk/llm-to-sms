@@ -10,10 +10,11 @@ export default async function handler(
 ) {
     try {
         const client = new Twilio(accountSid, authToken);
+
         let local = await client.availablePhoneNumbers('US')
             .local
             .list({ areaCode: 510, limit: 20 })
-        res.status(200).json({ number: local[0] });
+        res.status(200).json({ number: local[0].phoneNumber, sid: local[0]?.sid });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error })
