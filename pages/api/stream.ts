@@ -47,7 +47,7 @@ export default async function handler(
         content: `who is another figure other than leonardo da vinci`,
       },
     ],
-    temperature: 1,
+    temperature: 0,
     stream: true,
   };
   const controller = new AbortController();
@@ -70,32 +70,20 @@ export default async function handler(
       .then(function processText({ done, value }): Promise<void> | undefined {
         if (done) {
           console.log("stream complete");
-          console.log(sentMsg);
-          res.status(200).send({ message: "stream done" });
+          // console.log(cacheRes)
+          cacheRes = ""
+          res.status(200).send({body: 'steaming done'})
+
           return;
         }
         const decoded = new TextDecoder().decode(value);
-        // console.log(value);
         const json = decoded.split("data: ")[1]; // this data needs some manipulation in order to be parsed, a separate concern
         const aiResponse = JSON.parse(json);
-        const aiResponseText = aiResponse.choices[0].delta?.content;
-        console.log(aiResponseText, typeof aiResponseText);
+        console.log(aiResponse.choices[0].delta.content)
+        const aiResponseText = aiResponse.choices[0].delta.content;
+        // console.log(aiResponseText, typeof aiResponseText);
         cacheRes += aiResponseText;
-        if ((aiResponseText === ". " && cacheRes.length > 140) || (aiResponseText === ", " && cacheRes.length > 140)) {
-          console.log(cacheRes);
-          sentMsg.push(cacheRes.trimStart());
-          cacheRes = "";
-        } else if (cacheRes.length > 160) {
-          const cachResWords = cacheRes.split(" ");
-          const lastWord = cachResWords[cacheRes.length - 1];
-          const msg = cachResWords.slice(0, -1).join(" ");
-          console.log(cacheRes);
-          sentMsg.push(msg.trimStart());
-          cacheRes = "";
-          // console.log('next cache starts with: ', cacheRes)
-
-          // for debugging
-        }
+        console.log(cacheRes)
         return reader.read().then(processText);
       })
       .catch((e) => {
