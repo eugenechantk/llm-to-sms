@@ -39,8 +39,6 @@ export default async function handler(
             // TODO: calls the /api/stream route (wrap it as a function)
             // Request body needs: history -> in the type of ChatCompleteRequestMessage, accountSid, authToken, To, From
             const body = {
-                accountSid: process.env.TWILIO_ACCOUNT_SID,
-                authToken: process.env.TWILIO_AUTH_TOKEN,
                 to: To,
                 from: From,
                 history: 'something'

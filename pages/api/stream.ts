@@ -3,8 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
-import { Twilio } from "twilio";
 
+const baseUrl = process.env.VERCEL_URL
+  ? "https://" + process.env.VERCEL_URL
+  : "http://localhost:3000";
 const sampleMessages = [
   {
     role: ChatCompletionRequestMessageRoleEnum.User,
@@ -54,9 +56,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   // console.log(req.body)
-  const { accountSid, authToken, to, from, history } = req.body;
-  // TODO: Create the Twilio client here
-  const client = new Twilio(accountSid, authToken);
+  const { to, from, history } = req.body;
   let cacheRes = "";
   let msgList: string[] = [];
 
@@ -82,18 +82,22 @@ export default async function handler(
         const updatedCacheRes = words.join(" ");
         console.log(updatedCacheRes);
 
-        // TODO: call API send each chunk to user's number
-        // Request body: accountSid, authToken, To, From
-        await client.messages.create({
-          body: `${updatedCacheRes}`,
-          from: to,
-          to: from,
-        });
-        setTimeout(
-          () => console.log("mimicing Twilio send SMS", updatedCacheRes),
-          5000
+        // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
+        const body = {
+          to,
+          from,
+          chunk: updatedCacheRes,
+        };
+        const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        };
+        await fetch(`${baseUrl}/api/send_chunk`, options).then((response) =>
+          console.log(response)
         );
-        cacheRes = lastWord;
       }
     },
     onCompletion: async (completion: string) => {
