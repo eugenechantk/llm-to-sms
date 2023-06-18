@@ -7,8 +7,10 @@ const redis = new Redis({
     token: 'AZaGACQgNWFhNTk4YWUtZGI1NC00ZTRmLTg4NjktMDg1MDhhZGM4OGQyYzRiNWI1ZDhhNWY1NGViYTk0NDVkYTJhODJlNWJkOTY=',
 })
 
+
 class AccessRedis {
     number: any
+    messages: any
     constructor(number: number) {
         this.number = number;
     }

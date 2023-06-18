@@ -36,7 +36,7 @@ export default async function handler(
         }
         // Store new message
         try {
-            const store = AccessRedis.update({ number: From, messages: history || JSON.stringify({}) })
+            const store = new AccessRedis.update({ number: From, messages: history || JSON.stringify({}) })
         }
         catch (err) {
             console.log('Unable to store outpout message');
