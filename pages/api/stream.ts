@@ -81,6 +81,7 @@ export default async function handler(
         const lastWord = words.pop() || "";
         const updatedCacheRes = words.join(" ");
         console.log(updatedCacheRes);
+        console.log(`number to send to ${from} and chunk is ${updatedCacheRes}`)
 
         // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
         const body = {
@@ -98,6 +99,11 @@ export default async function handler(
         await fetch(`${baseUrl}/api/send_chunk`, options).then((response) =>
           console.log(response)
         );
+<<<<<<< Updated upstream
+        cacheRes = lastWord
+=======
+        cacheRes = 
+>>>>>>> Stashed changes
       }
     },
     onCompletion: async (completion: string) => {
