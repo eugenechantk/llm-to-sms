@@ -12,11 +12,10 @@ export default async function handler(
 ) {
     try {
         const client = new Twilio(accountSid, authToken);
-        const { PHONE_NUMBER, TARGET_URL } = req.body;
+        const { phoneNumber } = req.body;
         const data = await client.incomingPhoneNumbers
             .create({
-                // smsUrl: TARGET_URL,
-                phoneNumber: PHONE_NUMBER
+                phoneNumber
             })
         res.status(200).json(data)
     } catch (error) {
