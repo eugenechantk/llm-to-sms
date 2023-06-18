@@ -10,10 +10,13 @@ const redis = new Redis({
     token: 'AZaGACQgNWFhNTk4YWUtZGI1NC00ZTRmLTg4NjktMDg1MDhhZGM4OGQyYzRiNWI1ZDhhNWY1NGViYTk0NDVkYTJhODJlNWJkOTY=',
 })
 
+const baseUrl = process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Object>
 ) {
+
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     console.log(accountSid, authToken)
@@ -50,7 +53,7 @@ export default async function handler(
                 body: JSON.stringify(body),
               };
 
-            await fetch('/api/stream', options).then((response) => console.log(response))
+            await fetch(`${baseUrl}/api/stream`, options).then((response) => console.log(response))
             // await client.messages
             //     .create({
             //         body: `v3 response: something ${Body}`,
@@ -61,7 +64,8 @@ export default async function handler(
             await redis.set(From, updatedHistory)
         }
         catch (err) {
-            console.error("Unable to send message");
+            console.log(err)
+            // console.error("Unable to send message");
         }
         // Store new message
         try {
@@ -80,7 +84,7 @@ export default async function handler(
             // await redis.set(From, 'something')
         }
         catch (err) {
-            console.log('Unable to store outpout message');
+            // console.log('Unable to store outpout message');
         }
         res.status(200).json({ status: 'success' })
     } catch (error) {
