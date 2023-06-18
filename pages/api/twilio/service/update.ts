@@ -12,11 +12,11 @@ export default async function handler(
 ) {
     try {
         const client = new Twilio(accountSid, authToken);
-        const { statusCallback, SERVICE_NAME, inboundRequestUrl, fallbackUrl, useInboundWebhookOnNumber } = req.body;
+        const { statusCallback, serviceName, inboundRequestUrl, fallbackUrl } = req.body;
         await client.messaging.v1.services
             .create({
                 statusCallback,
-                friendlyName: SERVICE_NAME,
+                friendlyName: serviceName,
                 inboundRequestUrl,
                 inboundMethod: 'POST',
                 fallbackUrl,

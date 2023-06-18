@@ -12,8 +12,8 @@ export default async function handler(
 ) {
     try {
         const client = new Twilio(accountSid, authToken);
-        const { SERVICE_NAME, phoneNumberSid } = req.body;
-        await client.messaging.v1.services(SERVICE_NAME)
+        const { serviceName, phoneNumberSid } = req.body;
+        await client.messaging.v1.services(serviceName)
             .phoneNumbers
             .create({
                 phoneNumberSid

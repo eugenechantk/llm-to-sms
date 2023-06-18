@@ -12,9 +12,9 @@ export default async function handler(
 ) {
     try {
         const client = new Twilio(accountSid, authToken);
-        const SERVICE_NAME = req.body.SERVICE_NAME;
+        const serviceName = req.body.serviceName
         await client.messaging.v1.services
-            .create({ friendlyName: SERVICE_NAME })
+            .create({ friendlyName: serviceName })
         res.status(200).json({ status: 'success' })
     } catch (error) {
         console.log(error);
