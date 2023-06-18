@@ -72,7 +72,7 @@ export default async function handler(
                 res.status(400).json({ status: 'Failed to update service' })
             }
 
-            res.status(200).json({ status: 'success', service: updateService.data })
+            res.status(200).json({ status: 'success', service: updateService.data, number })
 
         } catch (error) {
             console.log(error);

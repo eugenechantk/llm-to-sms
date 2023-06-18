@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import React from "react";
 import { PlusCircleIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
 import Button from "@/common/components/Button";
+import axios from 'axios'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,19 @@ export default function Home() {
   const [payloads, setPayload] = React.useState<IPayload[]>([]);
   const [errMsg, setErrMsg] = React.useState<IErrMsg[]>([]);
   const [phoneNum, setPhoneNum] = React.useState<string>("(504)702-4561");
+
+  const handlePhoneNumberProvision = async () => {
+    try {
+      let service = (await axios.post('http://localhost:3000/api/twilio/setup/start', {
+        SERVER: 'https://llm-to-sms-git-merge-twilio-with-streaming-eugenechantk.vercel.app',
+        uuid: 'a1-10'
+      })).data
+      console.log(service.number);
+     setPhoneNum(service.number)
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   React.useEffect(() => {
     console.log(secrets);
@@ -51,7 +65,7 @@ export default function Home() {
           <h4 className="text-gray-300">
             Here&apos;s the SMS number to chat with your model
           </h4>
-          <h1>(504) 761-3416</h1>
+          <h1>{phoneNum}</h1>
         </div>
       )}
       {/* API FORM */}
@@ -254,9 +268,9 @@ export default function Home() {
           </div>
         </div>
 
-        <Button>
+        <button onClick={() => handlePhoneNumberProvision() }>
           <h3>Create SMS Number</h3>
-        </Button>
+        </button>
       </div>
     </main>
   );
