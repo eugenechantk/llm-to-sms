@@ -1,10 +1,10 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import { Configuration, OpenAIApi } from "openai-edge";
+import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
-import nextConnect from "next-connect";
 import type { NextRequest } from "next/server";
+import { Redis } from "@upstash/redis";
 
 const baseUrl = process.env.VERCEL_URL
   ? "https://" + process.env.VERCEL_URL
@@ -50,6 +50,11 @@ const config = new Configuration({
 });
 const openai = new OpenAIApi(config);
 
+const redis = new Redis({
+  url: process.env.HISTORY_REDIS_URL!,
+  token: process.env.HISTORY_REDIS_TOKEN!,
+});
+
 // IMPORTANT! Set the runtime to edge
 export const runtime = "edge";
 
@@ -61,13 +66,26 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
   let cacheRes = "";
   let msgList: string[] = [];
 
+  // GET CHAT HISTORY
+  const history = await redis.lrange(from, -6, -1);
+  console.log(history)
+
+  const convertedArray:ChatCompletionRequestMessage[] = history.map((item) => {
+    const [role, content] = item.split(':');
+    const roleFormatted = role.trim()
+    return {
+      role: roleFormatted === "user" ? ChatCompletionRequestMessageRoleEnum.User : ChatCompletionRequestMessageRoleEnum.Assistant,
+      content: content.trim()
+    };
+  });
+
+  console.log(convertedArray)
+
+
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     stream: true,
-    messages: [{
-      role: ChatCompletionRequestMessageRoleEnum.User,
-      content: prompt,
-    }],
+    messages: convertedArray,
   });
 
 
@@ -113,6 +131,8 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
       }
     },
     onCompletion: async (completion: string) => {
+      const formattedResponse = "assistant: " + completion;
+      const result = await redis.rpush(from, formattedResponse)
       console.log(cacheRes);
       // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
       const body = {
