@@ -71,13 +71,13 @@ export default function Home() {
       <div className="flex flex-col gap-12 w-1/2 items-center">
         <input
           type="text"
-          placeholder="Your API route"
+          placeholder="Enter your API route"
           className="w-full bg-transparent border-2 border-gray-800 text-3xl font-medium tracking-tight px-6 py-4 rounded-2xl"
         ></input>
-        <p className="text-lg text-gray-400">
+        {/* <p className="text-lg text-gray-400">
           Set up body and custom error messages to expose the API
           to an SMS service
-        </p>
+        </p> */}
         {/* REQUEST HEADERS */}
         <div className="w-full flex flex-col gap-4">
           {/* <div className="w-full flex flex-row justify-between items-center">
@@ -144,7 +144,7 @@ export default function Home() {
         {/* REQUEST BODY */}
         <div className="w-full flex flex-col gap-4">
           <div className="w-full flex flex-row justify-between items-center">
-            <h3>Request Body</h3>
+            <h3>Request Parameters</h3>
             <button
               onClick={() => {
                 const updatedPayload = [...payloads, { key: "", value: "" }];
@@ -205,7 +205,7 @@ export default function Home() {
         </div>
 
         {/* ERROR MESSAGE */}
-        <div className="w-full flex flex-col gap-4">
+        {/* <div className="w-full flex flex-col gap-4">
           <div className="w-full flex flex-row justify-between items-center">
             <h3>Error Message</h3>
             <button
@@ -265,7 +265,7 @@ export default function Home() {
               );
             })}
           </div>
-        </div>
+        </div> */}
 
         <button onClick={() => handlePhoneNumberProvision() }>
           <h3>Create SMS Number</h3>
