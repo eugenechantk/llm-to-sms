@@ -30,7 +30,7 @@ function AccessRedis() {
             next_history = messages;
         }
 
-        return await redis.set(body.number, next_history);
+        return await redis.set(number, next_history);
     }
 }
 

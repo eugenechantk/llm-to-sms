@@ -1,18 +1,6 @@
 
 import axios from 'axios'
-export default async function MODEL({ query, model, history, apiKey, url }) {
-    if (!model) {
-        model = "gpt-3.5-turbo"
-    }
-    if (!history) {
-        history = []
-    }
-    if (!url) {
-        url = "https://api.openai.com/v1/chat/completions"
-    }
-    if (!apiKey) {
-        apiKey = process.env.OPENAI_API_KEY;
-    }
+export default async function MODEL(query: any, model = "gpt-3.5-turbo", apiKey = process.env.OPENAI_API_KEY, url = "https://api.openai.com/v1/chat/completions", history = []) {
     const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,

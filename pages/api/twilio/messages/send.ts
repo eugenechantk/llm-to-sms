@@ -14,15 +14,16 @@ export default async function handler(
     try {
         const client = new Twilio(accountSid, authToken);
         const { Body, From, To } = req.body;
+        let history = []
         // Retrieve user chat history from Redis
         try {
-            const history = new AccessRedis().get(From)
+            history = new AccessRedis().get(From)
         } catch (error) {
             console.error('Unable to retrieve history');
         }
         // Pass query to Model  
         try {
-            const data = await MODEL({ query: Body, history })
+            const data = await MODEL(Body, '', '', '', history)
             await client.messages
                 .create({
                     body: `v3 response:  ${data.data.response}`,

@@ -6,7 +6,7 @@ export default async function handler(
 ) {
     try {
         console.log(req.body.query);
-        const data = await MODEL({ query: req.body.query })
+        const data = await MODEL(req.body.query)
         console.log(data);
         res.status(200).json({ status: 'success', response: data })
     } catch (error) {
