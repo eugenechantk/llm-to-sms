@@ -62,7 +62,7 @@ export default async function handler(
             // else {
             //     next_history = messages;
             // }
-            await redis.set(From, 'something')
+            // await redis.set(From, 'something')
         }
         catch (err) {
             console.log('Unable to store outpout message');
