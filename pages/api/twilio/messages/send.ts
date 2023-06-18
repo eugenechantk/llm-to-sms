@@ -16,6 +16,7 @@ export default async function handler(
 ) {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
+    console.log(accountSid, authToken)
     try {
         const redisStore = new AccessRedis()
         const client = new Twilio(accountSid, authToken);
