@@ -4,7 +4,7 @@ import React from "react";
 import { PlusCircleIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
 import Button from "@/common/components/Button";
 import axios from 'axios'
-
+import Logo from "../public/logo.svg"
 const inter = Inter({ subsets: ["latin"] });
 
 interface ISecret {
@@ -26,7 +26,7 @@ export default function Home() {
   const [secrets, setSecrets] = React.useState<ISecret[]>([]);
   const [payloads, setPayload] = React.useState<IPayload[]>([]);
   const [errMsg, setErrMsg] = React.useState<IErrMsg[]>([]);
-  const [phoneNum, setPhoneNum] = React.useState<string>("(504)702-4561");
+  const [phoneNum, setPhoneNum] = React.useState<string>("");
 
   const handlePhoneNumberProvision = async () => {
     try {
@@ -49,15 +49,19 @@ export default function Home() {
       className={`flex min-h-screen flex-col items-center p-24 ${inter.className}`}
     >
       {/* LOGO & HERO */}
-      <div className="mt-24 mb-24 relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
+      <div className="mt-24 mb-24 relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px] flex-col gap-10">
         <Image
           className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
+          src={Logo}
           alt="Next.js Logo"
-          width={180}
+          width={120}
           height={37}
           priority
         />
+        <div className="flex flex-col gap-6 items-center">
+        <h3 className="text-gray-300 text-5xl">Offline GPT</h3>
+        <p className="text-3xl text-gray-500">Deploy your LLM and serve your chat model on SMS</p>
+        </div>
       </div>
       {/* PHONE NUMBER */}
       {phoneNum && (
@@ -268,9 +272,9 @@ export default function Home() {
           </div>
         </div>
 
-        <button onClick={() => handlePhoneNumberProvision() }>
+        <Button onClick={() => handlePhoneNumberProvision() }>
           <h3>Create SMS Number</h3>
-        </button>
+        </Button>
       </div>
     </main>
   );
