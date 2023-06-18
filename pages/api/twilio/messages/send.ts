@@ -24,6 +24,7 @@ export default async function handler(
         const redisStore = new AccessRedis()
         const client = new Twilio(accountSid, authToken);
         const { Body, From, To } = req.body;
+        console.log(Body, From, To)
         let history: any;
         // Retrieve user chat history from Redis
         try {
@@ -65,25 +66,8 @@ export default async function handler(
             console.log(err)
             // console.error("Unable to send message");
         }
-        // Store new message
-        try {
-            // console.log('Saving' + number)
-            // let next_history: string[] = [];
-            // let past_history: any = await redis.get(number);
-
-            // var messages = JSON.parse(messages);
-
-            // if (past_history !== null) {
-            //     next_history = past_history.concat(messages);
-            // }
-            // else {
-            //     next_history = messages;
-            // }
-            // await redis.set(From, 'something')
-        }
-        catch (err) {
-            // console.log('Unable to store outpout message');
-        }
+        // TODO: Store new message
+        
         res.status(200).json({ status: 'success' })
     } catch (error) {
         console.log(error);
