@@ -57,6 +57,7 @@ export default async function handler(
 ) {
   // console.log(req.body)
   const { to, from, history } = req.body;
+  console.log(to, from)
   let cacheRes = "";
   let msgList: string[] = [];
 
@@ -85,8 +86,8 @@ export default async function handler(
 
         // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
         const body = {
-          to,
-          from,
+          to: to,
+          from: from,
           chunk: updatedCacheRes,
         };
         const options = {
