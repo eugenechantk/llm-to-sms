@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
-import nextConnect from "next-connect";
 import type { NextRequest } from "next/server";
 
 const baseUrl = process.env.VERCEL_URL
