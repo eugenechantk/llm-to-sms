@@ -3,8 +3,8 @@ import { Inter } from "next/font/google";
 import React from "react";
 import { PlusCircleIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
 import Button from "@/common/components/Button";
-import axios from 'axios'
-import Logo from "../public/logo.svg"
+import axios from "axios";
+import Logo from "../public/logo.svg";
 const inter = Inter({ subsets: ["latin"] });
 
 interface ISecret {
@@ -42,7 +42,7 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   React.useEffect(() => {
     console.log(secrets);
@@ -291,7 +291,7 @@ export default function Home() {
           </div>
         </div>
 
-        <button onClick={() => handlePhoneNumberProvision() }>
+        <button onClick={() => handlePhoneNumberProvision()}>
           <h3>Create SMS Number</h3>
         </button>
       </div>
