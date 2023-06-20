@@ -44,12 +44,6 @@ export default async function handler(
         const formattedPrompt = "user: " + Body;
         const result = await redis.rpush(From, formattedPrompt);
 
-        try {
-            // history = await redis.get(From)
-            console.log("what redis got: ", history);
-        } catch (error) {
-            console.error("Unable to retrieve history");
-        }
         // Pass query to Model
         try {
             const body = {
