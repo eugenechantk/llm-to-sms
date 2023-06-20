@@ -6,8 +6,8 @@ import { Twilio } from "twilio";
 import axios from 'axios'
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const baseUrl = process.env.VERCEL_URL
-  ? "https://" + process.env.VERCEL_URL + "/api/twilio"
+const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+  ? "https://" + process.env.NEXT_PUBLIC_VERCEL_URL + "/api/twilio"
   : "http://localhost:3000/api/twilio";
 export default async function handler(
     req: NextApiRequest,
