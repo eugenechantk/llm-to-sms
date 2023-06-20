@@ -91,6 +91,7 @@ export default function Home() {
           <input
             type="text"
             placeholder="Your API route"
+            defaultValue="https://api.openai.com/v1/completions"
             className="w-full bg-transparent border-2 border-gray-800 lg:text-3xl text-xl font-medium tracking-tight lg:px-6 px-4 lg:py-4 py-3 rounded-2xl"
           ></input>
           <button
@@ -121,6 +122,17 @@ export default function Home() {
           <textarea
             className="w-full bg-transparent border-2 border-gray-800 lg:text-xl text-base font-medium tracking-tight lg:px-6 lg:py-4 px-4 py-2 rounded-2xl h-[200px] lg:h-[280px]"
             placeholder="Specify your request headers, body and other settings"
+            defaultValue={`{
+                headers: {
+                  "Content-Type": application/json"
+                  "Authorization": Bearer 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",
+                },
+                body: {
+                  "model": "gpt-3.5-turbo",
+                  "temperature": 1,
+                  "stream": true,
+                }
+            }`}
           ></textarea>
         </div>
       </div>
