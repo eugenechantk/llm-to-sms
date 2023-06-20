@@ -6,6 +6,9 @@ import { Twilio } from "twilio";
 import axios from 'axios'
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
+const baseUrl = process.env.VERCEL_URL
+  ? "https://" + process.env.VERCEL_URL + "/api/twilio"
+  : "http://localhost:3000/api/twilio";
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Object>
@@ -13,15 +16,15 @@ export default async function handler(
     try {
         const uuid = req?.body?.uuid
         const SERVER_URL = req.body.SERVER
-        const BASE_URL =
-            process.env.NODE_ENV === "production" ? SERVER_URL : 'http://localhost:3000/api/twilio'
+        // const BASE_URL =
+        //     process.env.NODE_ENV === "production" ? SERVER_URL : 'http://localhost:3000/api/twilio'
         // Look for a valid number
-        let number = (await axios.get(`${BASE_URL}/number/get`)).data.number;
+        let number = (await axios.get(`${baseUrl}/number/get`)).data.number;
         let resp = `${number} is available for client ${uuid}`
         console.log(`Start provisioning the number [ ${number} ] for client ${uuid}`);
         try {
             // Provision/claim the number
-            let provision = (await axios.post(`${BASE_URL}/number/provision`, {
+            let provision = (await axios.post(`${baseUrl}/number/provision`, {
                 phoneNumber: number
             }))
             if (provision.data.status == 'in-use' && provision.status === 200) {
@@ -30,7 +33,7 @@ export default async function handler(
                 console.log(`${number} is not provisioned for client ${uuid}`);
             }
             // Create a service in Twilio with the number   
-            let createService = (await axios.post(`${BASE_URL}/service/create`, {
+            let createService = (await axios.post(`${baseUrl}/service/create`, {
                 serviceName: uuid,
             }))
             if (createService.status === 200) {
@@ -44,7 +47,7 @@ export default async function handler(
             const SERVICE_SID = createService.data.service.sid
             console.log(`Service sid : ${createService.data.service.sid}`);
             // Add the number to the service
-            let addNumber = (await axios.post(`${BASE_URL}/service/add`, {
+            let addNumber = (await axios.post(`${baseUrl}/service/add`, {
                 serviceName: SERVICE_SID,
                 phoneNumberSid: provision.data.sid
             }))
@@ -56,7 +59,7 @@ export default async function handler(
                 res.status(400).json({ status: 'Failed to add number to service' })
             }
             // Update service webhook
-            let updateService = (await axios.post(`${BASE_URL}/service/update`, {
+            let updateService = (await axios.post(`${baseUrl}/service/update`, {
                 serviceName: SERVICE_SID,
                 inboundRequestUrl: `${SERVER_URL}/api/twilio/messages/send?uuid=${uuid}`,
                 inboundMethod: 'POST',
