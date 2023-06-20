@@ -82,7 +82,7 @@ export default function Home() {
           <h4 className="text-gray-300 text-center text-xl lg:text-3xl">
             Here&apos;s the SMS number to chat with your model
           </h4>
-          <h1>{phoneNum}</h1>
+          <h1 className="text-3xl lg:text-5xl">{phoneNum}</h1>
         </div>
       )}
       {/* API FORM */}
@@ -108,7 +108,7 @@ export default function Home() {
             }}
             className="lg:px-5 lg:py-3 px-4 py-2 rounded-full font-semibold hover:!bg-gradient-to-b hover:!from-theme-15 hover:!from-[64%] hover:!to-theme-25 hover:!to-[100%]"
           >
-            <h3 className="text-xl lg_text-3xl">Create SMS Number</h3>
+            <h3 className="text-xl lg_text-3xl">{loading ? 'Loading...' : 'Create SMS Number'}</h3>
           </button>
         </div>
 
