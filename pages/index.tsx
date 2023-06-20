@@ -31,7 +31,7 @@ export default function Home() {
   const [secrets, setSecrets] = React.useState<ISecret[]>([]);
   const [payloads, setPayload] = React.useState<IPayload[]>([]);
   const [errMsg, setErrMsg] = React.useState<IErrMsg[]>([]);
-  const [phoneNum, setPhoneNum] = React.useState<string>("asdfads");
+  const [phoneNum, setPhoneNum] = React.useState<string>("");
   const [loading, setLoading] = React.useState(false)
 
   const handlePhoneNumberProvision = async () => {
