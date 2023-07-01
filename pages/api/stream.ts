@@ -70,22 +70,28 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
   const history = await redis.lrange(from, -6, -1);
   console.log(history)
 
-  const convertedArray:ChatCompletionRequestMessage[] = history.map((item) => {
-    const [role, content] = item.split(':');
-    const roleFormatted = role.trim()
-    return {
-      role: roleFormatted === "user" ? ChatCompletionRequestMessageRoleEnum.User : ChatCompletionRequestMessageRoleEnum.Assistant,
-      content: content.trim()
-    };
-  });
+  // const convertedArray:ChatCompletionRequestMessage[] = history.map((item) => {
+  //   const [role, content] = item.split(':');
+  //   const roleFormatted = role.trim()
+  //   return {
+  //     role: roleFormatted === "user" ? ChatCompletionRequestMessageRoleEnum.User : ChatCompletionRequestMessageRoleEnum.Assistant,
+  //     content: content.trim()
+  //   };
+  // });
 
-  console.log(convertedArray)
+  // console.log(convertedArray)
+
+  const formattedMsg = [{
+    role: ChatCompletionRequestMessageRoleEnum.User,
+    content: prompt,
+  },]
 
 
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     stream: true,
-    messages: convertedArray,
+    // messages: convertedArray,
+    messages: formattedMsg,
   });
 
 
@@ -96,39 +102,39 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
       Promise.resolve();
     },
     onToken: async (token: string) => {
-      cacheRes += token;
-      if (cacheRes.length > 160) {
-        cacheRes = cacheRes.replace(/\r?\n/g, "");
-        cacheRes = cacheRes.replace(/\\/g, "");
-        const words = cacheRes.split(" ");
-        const lastWord = words.pop() || "";
-        const updatedCacheRes = words.join(" ");
-        console.log(updatedCacheRes);
-        console.log(
-          `number to send to ${from} and chunk is ${updatedCacheRes}`
-        );
+      // cacheRes += token;
+      // if (cacheRes.length > 160) {
+      //   cacheRes = cacheRes.replace(/\r?\n/g, "");
+      //   cacheRes = cacheRes.replace(/\\/g, "");
+      //   const words = cacheRes.split(" ");
+      //   const lastWord = words.pop() || "";
+      //   const updatedCacheRes = words.join(" ");
+      //   console.log(updatedCacheRes);
+      //   console.log(
+      //     `number to send to ${from} and chunk is ${updatedCacheRes}`
+      //   );
 
-        // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
-        const body = {
-          to: to,
-          from: from,
-          chunk: updatedCacheRes,
-        };
-        const options = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        };
-        try {
-          await fetch(`${baseUrl}/api/twilio/messages/send_chunk`, options);
-        } catch (e) {
-          console.log(e);
-        }
+      //   // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
+      //   const body = {
+      //     to: to,
+      //     from: from,
+      //     chunk: updatedCacheRes,
+      //   };
+      //   const options = {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify(body),
+      //   };
+      //   try {
+      //     await fetch(`${baseUrl}/api/twilio/messages/send_chunk`, options);
+      //   } catch (e) {
+      //     console.log(e);
+      //   }
 
-        cacheRes = lastWord;
-      }
+      //   cacheRes = lastWord;
+      // }
     },
     onCompletion: async (completion: string) => {
       const formattedResponse = "assistant: " + completion;
@@ -138,7 +144,8 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
       const body = {
         to: to,
         from: from,
-        chunk: cacheRes,
+        // chunk: cacheRes,
+        chunk: completion,
       };
       const options = {
         method: "POST",
