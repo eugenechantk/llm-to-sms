@@ -86,7 +86,7 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
   let cacheRes = "";
   let msgList: string[] = [];
 
-  GET CHAT HISTORY
+  // GET CHAT HISTORY
   const history = await redis.lrange(from, -6, -1);
   console.log(history)
 
