@@ -1,10 +1,24 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai-edge";
+import {
+  ChatCompletionRequestMessage,
+  Configuration,
+  OpenAIApi,
+} from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
 import type { NextRequest } from "next/server";
 import { Redis } from "@upstash/redis";
+
+const sampleHistory = `
+This is the chat history: 
+User: What is affirmative action?
+Agent: Affirmative action refers to policies or programs aimed at increasing the representation and opportunities for historically underrepresented groups in areas such as employment, education, or business. These policies are designed to address past and present discrimination and promote equal opportunities formarginalized groups, typically based on race, gender, religion, or ethnicity. Affirmative action measures can include preferential hiring or admissions practices, outreach programs, or the establishment of diversity quotas. The purpose of affirmative action is to promote diversity, inclusion, and equal access to opportunities in order to create a more equitable society.
+User: How does it help minorities
+Agent: Affirmative action is intended to help minorities by addressing systemic barriers and promoting equal opportunities. By implementing measures such as preferential treatment in hiring or admissions processes, targeted recruitment efforts, or diversity quotas, the goal is to counteract historic and ongoing discrimination faced by minority groups. Affirmative action can benefit minorities in several ways:1. Increased representation: Affirmative action seeks toensure that historically underrepresented groups have a fair chance to be represented in various sectors, including education, employment, and politics. This promotes diversity and inclusion, giving minorities a greater voice and presence in areas where they may have been historically marginalized.2. Equal access to opportunities: Affirmative action aims to provide minorities with the same opportunities as those enjoyed by dominant groups. It promotes fair treatment and equal consideration in admission processes, hiring decisions, and other avenues for advancement. This can help level the playing field and reduce the effects of systemic discrimination.3. Breaking barriers: Affirmative action can help break down barriers that have traditionally prevented minorities from accessingquality education or obtaining higher-level positions.
+User: What colleges uses affirmative action?
+Agent: Many colleges and universities in the United States use some form of affirmative action in their admissions processes. Affirmative action is intended to promote Many colleges and universities in the United States use some form of affirmative action in their admissions processes. Affirmative action is intended to promote practices of each institution may vary, several prominent universities known for their commitment to affirmative action include Ivy League schools such as Harvard University, Yale University, and Princeton University. Additionally, other prestigious institutions like Stanford University, the Massachusetts Institute of Technology (MIT), and the University of Chicago also consider diversity as an important factor in their admissions decisions. It is important to note that affirmative action policies are subject to legal challenges and vary across institutions and jurisdictions.
+`;
 
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
   ? "https://" + process.env.NEXT_PUBLIC_VERCEL_URL
@@ -67,33 +81,37 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
   let msgList: string[] = [];
 
   // GET CHAT HISTORY
-  const history = await redis.lrange(from, -6, -1);
-  console.log(history)
+  // const history = await redis.lrange(from, -6, -1);
+  // console.log(history)
 
-  const convertedArray:ChatCompletionRequestMessage[] = history.map((item) => {
-    const [role, content] = item.split(':');
-    const roleFormatted = role.trim()
-    return {
-      role: roleFormatted === "user" ? ChatCompletionRequestMessageRoleEnum.User : ChatCompletionRequestMessageRoleEnum.Assistant,
-      content: content.trim()
-    };
-  });
+  // const convertedArray:ChatCompletionRequestMessage[] = history.map((item) => {
+  //   const [role, content] = item.split(':');
+  //   const roleFormatted = role.trim()
+  //   return {
+  //     role: roleFormatted === "user" ? ChatCompletionRequestMessageRoleEnum.User : ChatCompletionRequestMessageRoleEnum.Assistant,
+  //     content: content.trim()
+  //   };
+  // });
 
-  console.log(convertedArray)
+  // console.log(convertedArray)
 
-  // const formattedMsg = [{
-  //   role: ChatCompletionRequestMessageRoleEnum.User,
-  //   content: prompt,
-  // },]
-
+  const formattedMsg = [
+    {
+      role: ChatCompletionRequestMessageRoleEnum.Assistant,
+      content: sampleHistory,
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content: prompt,
+    },
+  ];
 
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     stream: true,
-    messages: convertedArray,
-    // messages: formattedMsg,
+    // messages: convertedArray,
+    messages: formattedMsg,
   });
-
 
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response, {
@@ -138,7 +156,7 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
     },
     onCompletion: async (completion: string) => {
       const formattedResponse = "assistant: " + completion;
-      const result = await redis.rpush(from, formattedResponse)
+      const result = await redis.rpush(from, formattedResponse);
       console.log(cacheRes);
       // SEND TO API ROUTE TO HANDLE SMS SENDING BACK TO USER
       const body = {
@@ -161,14 +179,14 @@ export default async function handler(req: NextRequest, res: NextApiResponse) {
             // console.log(msgList)
             // @ts-ignore
             res.status(200).json({ response: completion });
-            res.end()
+            res.end();
             // Promise.resolve();
           }
         );
       } catch (e) {
         console.log(e);
-        res.status(400).json({ error: 'something wrong' });
-        res.end()
+        res.status(400).json({ error: "something wrong" });
+        res.end();
         // Promise.resolve()
       }
     },
